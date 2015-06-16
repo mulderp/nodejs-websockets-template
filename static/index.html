@@ -1,0 +1,67 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Embedded Sandbox</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+  <script src="js/d3.min.js"></script>
+  <script src="js/epoch.min.js"></script>
+
+  <style>
+    body{
+      font:500 14px/21px 'Helvetica Neue', Helvetica, Arials;
+      padding:40px;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+    }
+    .display  {
+      float: left;
+    }
+    .pinout  {
+      float: left;
+    }
+    .status {
+      width: 600px;
+      float: right;
+    }
+</style>
+</head>
+<body>
+
+  <h1>Embedded Sandbox</h1>
+
+<div id="lineChart" style="width: 800px; height: 200px"></div>
+<script>
+  var ws = new WebSocket('ws://localhost:3474');
+
+  var chartData = [{
+    label: "Pot 1",
+    axes: ['left', 'bottom', 'right'],
+    values: []
+  }];
+
+  $(function() {
+    var lineChart = $('#lineChart').epoch({
+      type: 'time.line',
+      data: chartData
+    });
+
+    ws.onmessage = function(e) {
+      var timestamp = ((new Date()).getTime() / 1000)|0;
+      var data = JSON.parse(e.data);
+      var dataPoint = {time:  timestamp, y: data.analog};
+      console.log(dataPoint);
+      lineChart.push([dataPoint]);
+    };
+  });
+</script>
+
+
+</body>
+</html>
